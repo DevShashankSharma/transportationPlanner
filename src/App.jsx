@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LocationInput from "./components/LocationInput";
 import MapDisplay from "./components/MapDisplay";
 import RouteInfo from "./components/RouteInfo";
@@ -19,7 +19,7 @@ export default function App() {
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`
       );
       const data = await response.json();
-
+      console.log(data)
       if (data.length > 0) {
         const coords = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
         if (type === "start") {
@@ -33,6 +33,12 @@ export default function App() {
     }
   };
 
+  useEffect(() => {
+    console.log("Start:", startCoords);
+    console.log("End:", endCoords);
+  }
+  , [startCoords, endCoords]);
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Smart Route Finder</h1>
@@ -44,7 +50,7 @@ export default function App() {
         fetchCoordinates={fetchCoordinates} // Pass function as a prop
       />
       <MapDisplay startCoords={startCoords} endCoords={endCoords} route={route} />
-      <RouteInfo distance="10" duration="20" />
+      <RouteInfo startCoords={startCoords} endCoords={endCoords} />
     </div>
   );
 }

@@ -9,7 +9,10 @@ export default function LocationInput({ start, end, setStart, setEnd, fetchCoord
                 placeholder="Start Location"
                 className="border p-3 w-full rounded-lg"
                 value={start}
-                onChange={(e) => setStart(e.target.value)}
+                onChange={(e) => {
+                    setStart(e.target.value);
+                    console.log(e.target.value);
+                }}
                 onBlur={() => fetchCoordinates(start, 'start')}
             />
             <input
