@@ -17,7 +17,7 @@ const customIcon = new L.Icon({
     popupAnchor: [1, -34],
 });
 
-const API_KEY = "5b3ce3597851110001cf624870e7ba6c0ea64b49af744abb980f67da"; // Replace with your actual API key
+const API_KEY = "5bd4c6f7f2d544bebacf175696cbf884"; // Replace with your actual API key
 
 // Component to auto-adjust map view to show both points
 function MapAutoFit({ startCoords, endCoords }) {
