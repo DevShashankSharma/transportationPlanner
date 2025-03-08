@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { MapContainer, TileLayer, Marker, Polyline, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
@@ -19,6 +19,24 @@ const customIcon = new L.Icon({
 
 const API_KEY = "5b3ce3597851110001cf624870e7ba6c0ea64b49af744abb980f67da"; // Replace with your actual API key
 
+// Component to auto-adjust map view to show both points
+function MapAutoFit({ startCoords, endCoords }) {
+    const map = useMap();
+
+    useEffect(() => {
+        if (startCoords && endCoords) {
+            const bounds = L.latLngBounds([startCoords, endCoords]);
+            map.fitBounds(bounds, { padding: [50, 50] }); // Fit both markers within view
+        } else if (startCoords) {
+            map.setView(startCoords, 12);
+        } else if (endCoords) {
+            map.setView(endCoords, 12);
+        }
+    }, [startCoords, endCoords, map]);
+
+    return null;
+}
+
 export default function MapDisplay({ startCoords, endCoords }) {
     const [route, setRoute] = useState([]); // Stores route coordinates
 
@@ -30,6 +48,8 @@ export default function MapDisplay({ startCoords, endCoords }) {
 
     const getRoute = async () => {
         try {
+            if (!startCoords || !endCoords) return;
+
             const response = await axios.post(
                 `https://api.openrouteservice.org/v2/directions/driving-car`,
                 {
@@ -57,6 +77,7 @@ export default function MapDisplay({ startCoords, endCoords }) {
             style={{ height: "500px", width: "100%" }}
         >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <MapAutoFit startCoords={startCoords} endCoords={endCoords} />
 
             {/* Start and End Markers */}
             {startCoords && (
