@@ -7,6 +7,7 @@ const API_KEY = "5b3ce3597851110001cf624870e7ba6c0ea64b49af744abb980f67da"; // R
 export default function RouteInfo({ startCoords, endCoords }) {
     const [distance, setDistance] = useState(null);
     const [duration, setDuration] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (startCoords && endCoords) {
@@ -15,6 +16,7 @@ export default function RouteInfo({ startCoords, endCoords }) {
     }, [startCoords, endCoords]);
 
     const getRouteInfo = async () => {
+        setLoading(true);
         try {
             const response = await axios.post(
                 `https://api.openrouteservice.org/v2/directions/driving-car`,
@@ -31,19 +33,25 @@ export default function RouteInfo({ startCoords, endCoords }) {
             setDuration((route.summary.duration / 60).toFixed(2) + " mins"); // Convert to minutes
         } catch (error) {
             console.error("Error fetching route info:", error);
+            setDistance(null);
+            setDuration(null);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="bg-white p-4 rounded-md shadow-md mt-4">
-            <h2 className="text-lg font-semibold text-gray-700">Route Information</h2>
-            {distance && duration ? (
+        <div className="bg-white p-6 rounded-lg shadow-md mt-4 w-full text-gray-900 w-full">
+            <h2 className="text-xl font-semibold text-blue-600 mb-3">🚗 Route Information</h2>
+            {loading ? (
+                <p className="text-gray-600">🔄 Calculating...</p>
+            ) : distance && duration ? (
                 <>
-                    <p><strong>Distance:</strong> {distance}</p>
-                    <p><strong>Estimated Duration:</strong> {duration}</p>
+                    <p className="text-lg"><strong>📏 Distance:</strong> {distance}</p>
+                    <p className="text-lg"><strong>⏳ Estimated Duration:</strong> {duration}</p>
                 </>
             ) : (
-                <p className="text-gray-500">Enter locations to calculate distance and time.</p>
+                <p className="text-gray-500">📍 Enter locations to calculate distance and time.</p>
             )}
         </div>
     );
